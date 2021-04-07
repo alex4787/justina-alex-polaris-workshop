@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useCallback} from 'react';
 import {graphql, compose} from 'react-apollo';
 import gql from 'graphql-tag';
 import {
@@ -9,6 +9,9 @@ import {
   SkeletonBodyText,
   SkeletonDisplayText,
   TextContainer,
+  ChoiceList,
+  TextField,
+  Checkbox,
 } from '@shopify/polaris';
 
 function Settings({loading, updateSettingsMutation}) {
@@ -16,6 +19,9 @@ function Settings({loading, updateSettingsMutation}) {
   const [email, setEmail] = useState('');
   const [emailNotifications, setEmailNotifications] = useState(false);
   const [emailError, setEmailError] = useState(false);
+  const [selected, setSelected] = useState(['hidden']);
+  const handleChange = useCallback((value) => setSelected(value), []);
+  const handleEmailChange = useCallback((value) => setEmail(value), []);
 
   const handleFormSubmit = () => {
     // We prevent form submission when there is an error in the email field.
@@ -66,16 +72,35 @@ function Settings({loading, updateSettingsMutation}) {
       {/* Annotated sections are useful in settings pages to give more context about what the merchant will change with each setting. */}
       <Layout.AnnotatedSection
         title="Auto publish"
+        description="Automatically check new reviews for spam and then publish them."
       >
         <Card sectioned>
-          {/* ... */}
+
+          <ChoiceList
+            title="Auto publish"
+            choices={[
+              {label: 'Enabled', value: 'optional', helpText: 'New reviews are checked for spam and then are automatically published.'},
+              {label: 'Disabled', value: 'required', helpText: 'You must manually approve and publish new reviews.'},
+            ]}
+            selected={selected}
+            onChange={handleChange}
+          />
         </Card>
       </Layout.AnnotatedSection>
       <Layout.AnnotatedSection
         title="Email settings"
+        description="Choose if you want to receive email notifications for each review."
       >
         <Card sectioned>
-          {/* ... */}
+          <TextField
+            value={email}
+            onChange={handleEmailChange}
+            label="Email"
+            type="email"
+          />
+          <Checkbox
+            label="Send me an email when a review is submitted."
+          />
         </Card>
       </Layout.AnnotatedSection>
     </Layout>
@@ -86,6 +111,7 @@ function Settings({loading, updateSettingsMutation}) {
     <Form onSubmit={handleFormSubmit}>
       <Page
         title="Settings"
+        primaryAction={{content: 'Save'}}
         breadcrumbs={[{content: 'Product reviews', url: '/'}]}
       >
         {loadingStateContent}

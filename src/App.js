@@ -6,6 +6,7 @@ import {AppProvider} from '@shopify/polaris';
 
 import ReviewList from './routes/ReviewList';
 import ReviewDetails from './routes/ReviewDetails';
+import NewReview from './routes/NewReview';
 import Settings from './routes/Settings';
 import NotFound from './routes/NotFound';
 
@@ -28,6 +29,7 @@ function App() {
         <Router>
           <Switch>
             <Route exact path="/" component={ReviewList} />
+            <Route exact path="/reviews/new" component={NewReview} />
             <Route path="/reviews/:id" component={ReviewDetails} />
             <Route exact path="/settings" component={Settings} />
             <Route component={NotFound} />
